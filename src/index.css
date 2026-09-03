@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #07090E;
+    color: #F8FAFC;
+    font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B0E14;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FF5E14;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: rgba(16, 21, 32, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-panel-hover {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel-hover:hover {
+  background: rgba(26, 35, 55, 0.8);
+  border-color: rgba(255, 94, 20, 0.35);
+  box-shadow: 0 10px 30px -10px rgba(255, 94, 20, 0.15);
+}
+
+.glow-orange {
+  box-shadow: 0 0 25px rgba(255, 94, 20, 0.35);
+}
+
+.glow-gold {
+  box-shadow: 0 0 30px rgba(234, 179, 8, 0.35);
+}
+
+.glow-silver {
+  box-shadow: 0 0 25px rgba(148, 163, 184, 0.25);
+}
+
+.glow-bronze {
+  box-shadow: 0 0 25px rgba(205, 127, 50, 0.25);
+}
+
+/* Gradient Texts */
+.text-gradient-orange {
+  background: linear-gradient(135deg, #FF9E66 0%, #FF5E14 50%, #FFA133 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, #FEF08A 0%, #EAB308 50%, #CA8A04 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Shimmer animation */
+@keyframes shimmerAnim {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.shimmer-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-effect::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  animation: shimmerAnim 2.5s infinite;
+}
