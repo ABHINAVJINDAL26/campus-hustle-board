@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import confetti from 'canvas-confetti';
 import { INITIAL_PARTICIPANTS, RECENT_ACTIVITY_FEED } from './data/participants';
 import Navbar from './components/Navbar';
@@ -14,12 +14,32 @@ import MobileStickyBar from './components/MobileStickyBar';
 import Footer from './components/Footer';
 import { playChime } from './utils/sound';
 
+const STORAGE_KEY_PARTICIPANTS = 'eyfi_leaderboard_participants_v1';
+const STORAGE_KEY_USER_ID = 'eyfi_leaderboard_user_id_v1';
+const STORAGE_KEY_ACTIVITY = 'eyfi_leaderboard_activity_v1';
+
 export default function App() {
-  // State: List of participants
-  const [participants, setParticipants] = useState(INITIAL_PARTICIPANTS);
+  // State: List of participants with localStorage persistence
+  const [participants, setParticipants] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_PARTICIPANTS);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to load participants from localStorage', e);
+    }
+    return INITIAL_PARTICIPANTS;
+  });
   
-  // State: Current active user persona (Default: Shreya Iyer #18 or customizable)
-  const [currentUserId, setCurrentUserId] = useState(18);
+  // State: Current active user persona with localStorage persistence
+  const [currentUserId, setCurrentUserId] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_USER_ID);
+      if (saved) return Number(saved);
+    } catch (e) {
+      console.error('Failed to load user ID from localStorage', e);
+    }
+    return 18; // Default to #18 Shreya Iyer
+  });
 
   // State: Search & Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,8 +53,43 @@ export default function App() {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [shareCardParticipant, setShareCardParticipant] = useState(null);
 
-  // State: Live activity feed
-  const [recentActivity, setRecentActivity] = useState(RECENT_ACTIVITY_FEED);
+  // State: Live activity feed with localStorage persistence
+  const [recentActivity, setRecentActivity] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_ACTIVITY);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to load activity from localStorage', e);
+    }
+    return RECENT_ACTIVITY_FEED;
+  });
+
+  // Save to localStorage whenever participants change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_PARTICIPANTS, JSON.stringify(participants));
+    } catch (e) {
+      console.error('Failed to save participants to localStorage', e);
+    }
+  }, [participants]);
+
+  // Save selected user persona to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_USER_ID, String(currentUserId));
+    } catch (e) {
+      console.error('Failed to save user ID to localStorage', e);
+    }
+  }, [currentUserId]);
+
+  // Save recent activity to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_ACTIVITY, JSON.stringify(recentActivity));
+    } catch (e) {
+      console.error('Failed to save activity to localStorage', e);
+    }
+  }, [recentActivity]);
 
   // Calculate sorted & ranked list
   const rankedParticipants = useMemo(() => {
@@ -179,6 +234,19 @@ export default function App() {
     setActiveTimeframe('overall');
     setActiveCollege('All Colleges');
     setSortBy('earnings');
+  };
+
+  // Reset Data back to initial default
+  const handleResetAllData = () => {
+    if (window.confirm('Reset all earnings and rankings back to initial default demo data?')) {
+      localStorage.removeItem(STORAGE_KEY_PARTICIPANTS);
+      localStorage.removeItem(STORAGE_KEY_USER_ID);
+      localStorage.removeItem(STORAGE_KEY_ACTIVITY);
+      setParticipants(INITIAL_PARTICIPANTS);
+      setCurrentUserId(18);
+      setRecentActivity(RECENT_ACTIVITY_FEED);
+      playChime('click');
+    }
   };
 
   const handleScrollToTop = () => {
